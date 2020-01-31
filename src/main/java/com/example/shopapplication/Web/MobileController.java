@@ -1,48 +1,57 @@
 package com.example.shopapplication.Web;
 
 
-import com.example.shopapplication.Model.Mobile;
-import com.example.shopapplication.Model.WrapperRequest;
-import com.example.shopapplication.Services.MobileService;
+import com.example.shopapplication.Model.MobilePhone;
+import com.example.shopapplication.Services.MapValidationErrorService;
+import com.example.shopapplication.Services.MobilePhoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/mobile")
+@RequestMapping("/api/mobilePhone")
 public class MobileController {
 
     @Autowired
-    private MobileService mobileService;
+    private MobilePhoneService mobilePhoneService;
+
+    @Autowired
+    private MapValidationErrorService mapValidationErrorService;
 
     @PostMapping("")
-    public ResponseEntity<?> addNewMobile(@Valid @RequestBody Mobile mobile, BindingResult bindingResult){
+    public ResponseEntity<?> addNewMobile(@Valid @RequestBody MobilePhone mobilePhone, BindingResult bindingResult){
 
-        if(bindingResult.hasErrors()){
-            return new ResponseEntity<String>("Invalid mobile object", HttpStatus.BAD_REQUEST);
-        }
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
 
-        Mobile mobile1 = mobileService.saveOrUpdateMobile(mobile);
-        return new ResponseEntity<Mobile>(mobile1, HttpStatus.CREATED);
+        if(errorMap != null) return errorMap;
+
+        MobilePhone mobilePhone1 = mobilePhoneService.saveOrUpdateMobile(mobilePhone);
+        return new ResponseEntity<MobilePhone>(mobilePhone1, HttpStatus.CREATED);
     }
 
-    // This is example for zakhar
+    @GetMapping("/{mobilePhoneId}")
+    public ResponseEntity<?> getMobileById(@PathVariable String mobilePhoneId){
 
-    @PostMapping("/getMobile")
-    public ResponseEntity<?> getMobile(@RequestBody WrapperRequest wrapperRequest){
+        MobilePhone mobilePhone = mobilePhoneService.findMobileByIdentifier(mobilePhoneId);
 
-        System.out.println(wrapperRequest.getMobileIdentifier());
-        System.out.println(wrapperRequest.getBrand());
+        return new ResponseEntity<MobilePhone>(mobilePhone, HttpStatus.OK);
+    }
 
-        Optional<Mobile> mobile = mobileService.getMobile(wrapperRequest.getMobileIdentifier(), wrapperRequest.getBrand());
+    @GetMapping("/all")
+    public Iterable<MobilePhone> getAllMobilePhone(){
+        return mobilePhoneService.findAllMobilePhone();
+    }
 
-        return new ResponseEntity<Optional<Mobile>>(mobile, HttpStatus.OK);
+    @DeleteMapping("/{mobileIdentifier}")
+    public ResponseEntity<?> deleteMobilePhone(@PathVariable String mobileIdentifier){
+
+        mobilePhoneService.deleteMobilePhoneByIdentifier(mobileIdentifier);
+
+        return new ResponseEntity<String>("Mobile with id: " + mobileIdentifier + " was deleted", HttpStatus.OK);
     }
 }
