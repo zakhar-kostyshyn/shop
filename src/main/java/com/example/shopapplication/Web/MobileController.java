@@ -15,6 +15,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/mobilePhone")
+@CrossOrigin("*")
 public class MobileController {
 
     @Autowired
@@ -42,7 +43,7 @@ public class MobileController {
         return new ResponseEntity<MobilePhone>(mobilePhone, HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Iterable<MobilePhone> getAllMobilePhone(){
         return mobilePhoneService.findAllMobilePhone();
     }
