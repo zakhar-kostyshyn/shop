@@ -1,6 +1,8 @@
 package com.example.shopapplication.Model;
 
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.HashSet;
@@ -17,16 +19,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Field 'username' must be filled")
     @Size(max = 20)
     private String username;
 
-    @NotBlank
-    @Size(max = 20)
-    @Email
+    @NotBlank(message = "Field 'email' must be filled")
+    @Size(max = 40)
+    @Email(message = "This is not email, please enter correct data")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Field 'password' must be filled")
     @Size(min = 8,max = 120)
     private String password;
 
