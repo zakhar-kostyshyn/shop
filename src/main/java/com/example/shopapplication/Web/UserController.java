@@ -37,14 +37,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
     @PostMapping("/signUp")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult){
+
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
 
         if(errorMap != null) return errorMap;
@@ -54,27 +49,6 @@ public class UserController {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult){
-
-        System.out.println("USERNAME:" + loginRequest.getUsername());
-        System.out.println("PASSWORD:" + loginRequest.getPassword());
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-        System.out.println("AUTHENTICATION" + authentication);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> ((GrantedAuthority) item).getAuthority())
-                .collect(Collectors.toList());
-
-        return new ResponseEntity<JwtResponse>(new JwtResponse(jwt,
-                                                               userDetails.getId(),
-                                                               userDetails.getUsername(),
-                                                               userDetails.getEmail(),
-                                                               roles), HttpStatus.OK);
+        return new ResponseEntity<JwtResponse>(userService.authenticateUser(loginRequest), HttpStatus.OK);
     }
 }
