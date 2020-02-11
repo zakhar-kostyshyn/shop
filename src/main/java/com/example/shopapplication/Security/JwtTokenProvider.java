@@ -1,5 +1,6 @@
 package com.example.shopapplication.Security;
 
+import com.example.shopapplication.Exceptions.InvalidTokenException;
 import com.example.shopapplication.Security.Services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
@@ -47,18 +48,21 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(SECRET).parseClaimsJws(authToken);
             return true;
         }catch(SignatureException ex){
-            System.out.println("Invalid Jwt Signature");
+            //System.out.println("Invalid Jwt Signature");
+            throw new InvalidTokenException("Invalid Jwt Signature");
         }catch(MalformedJwtException ex){
-            System.out.println("Invalid Jwt token");
+            //System.out.println("Invalid Jwt token");
+            throw new InvalidTokenException("Invalid JWT toke");
         }catch(ExpiredJwtException ex){
-            System.out.println("Expired jwt token");
+            //System.out.println("Expired jwt token");
+            throw new InvalidTokenException("Expired jwt token");
         }catch(UnsupportedJwtException ex){
-            System.out.println("Unsupported Jwt token");
+            //System.out.println("Unsupported Jwt token");
+            throw new InvalidTokenException("Unsupported Jwt token");
         }catch(IllegalArgumentException ex){
-            System.out.println("Jwt claims string is empty");
+            //System.out.println("Jwt claims string is empty");
+            throw new InvalidTokenException("Jwt claims string is empty");
         }
-
-        return false;
     }
 
     public String getUsernameFromToken(String token){

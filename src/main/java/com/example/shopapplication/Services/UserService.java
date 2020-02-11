@@ -10,6 +10,7 @@ import com.example.shopapplication.Repositories.RoleRepository;
 import com.example.shopapplication.Repositories.UserRepository;
 import com.example.shopapplication.Security.JwtTokenProvider;
 import com.example.shopapplication.Security.Services.UserDetailsImpl;
+import com.example.shopapplication.Security.Services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.shopapplication.Security.SecurityConstants.TOKEN_PREFIX;
 
 @Service
 public class UserService {
@@ -43,6 +48,9 @@ public class UserService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     public ResponseEntity<?> createNewUser(SignupRequest signupRequest){
 
@@ -106,5 +114,21 @@ public class UserService {
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 roles);
+    }
+
+    public UserDetails loadUser(String jwtToken){
+
+        if(StringUtils.hasText(jwtToken) && jwtToken.startsWith(TOKEN_PREFIX)){
+            jwtToken = jwtToken.substring(7, jwtToken.length());
+        }
+
+        if(!jwtTokenProvider.validateJwtToken(jwtToken)) return null;
+
+
+        String username = jwtTokenProvider.getUsernameFromToken(jwtToken);
+
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        return user;
     }
 }
