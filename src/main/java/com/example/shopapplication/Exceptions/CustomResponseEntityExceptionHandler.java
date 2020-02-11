@@ -18,4 +18,11 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         MobilePhoneIdExceptionResponse exceptionResponse = new MobilePhoneIdExceptionResponse(ex.getMessage());
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleInvalidToken(InvalidTokenException ex, WebRequest request){
+        System.out.println("Hello from handle exception" + ex.getMessage());
+        InvalidTokenResponse invalidTokenResponse = new InvalidTokenResponse(ex.getMessage());
+        return new ResponseEntity(invalidTokenResponse, HttpStatus.BAD_REQUEST);
+    }
 }
