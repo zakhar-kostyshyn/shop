@@ -16,6 +16,13 @@ public class SignupRequest {
     @Email(message = "This is not email, please enter correct data")
     private String email;
 
+
+    @NotBlank(message = "Field 'first_name' must be filled")
+    private String firstName;
+
+    @NotBlank(message = "Field 'last_name' must be filled")
+    private String lastName;
+
     private Set<String> role;
 
     @NotBlank(message = "Field 'password' must be filled")
@@ -52,5 +59,21 @@ public class SignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

@@ -19,6 +19,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Field 'first_name' must be filled")
+    private String firstName;
+
+    @NotBlank(message = "Field 'last_name' must be filled")
+    private String lastName;
+
     @NotBlank(message = "Field 'username' must be filled")
     @Size(max = 20)
     private String username;
@@ -40,8 +46,10 @@ public class User {
 
     public User(){}
 
-    public User(String username,String email,String password) {
+    public User(String username,String firstName, String lastName,String email,String password) {
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
     }
@@ -84,5 +92,21 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

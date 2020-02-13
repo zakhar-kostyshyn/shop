@@ -1,22 +1,16 @@
 package com.example.shopapplication.Web;
 
 
+import com.example.shopapplication.Model.User;
 import com.example.shopapplication.Payload.Request.LoginRequest;
 import com.example.shopapplication.Payload.Request.SignupRequest;
 import com.example.shopapplication.Payload.Response.JwtResponse;
-import com.example.shopapplication.Security.JwtTokenProvider;
-import com.example.shopapplication.Security.Services.UserDetailsImpl;
 import com.example.shopapplication.Services.MapValidationErrorService;
 import com.example.shopapplication.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +52,11 @@ public class UserController {
         if(user == null) return new ResponseEntity<String>("Invalid token", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<UserDetails>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/allUsers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Iterable<User> getAllUsers(){
+        return userService.findAllUsers();
     }
 }

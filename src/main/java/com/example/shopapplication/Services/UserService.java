@@ -65,6 +65,8 @@ public class UserService {
         // Create new User's account
 
         User newUser = new User(signupRequest.getUsername(),
+                                signupRequest.getFirstName(),
+                                signupRequest.getLastName(),
                                 signupRequest.getEmail(),
                                 bCryptPasswordEncoder.encode(signupRequest.getPassword()));
 
@@ -131,4 +133,6 @@ public class UserService {
 
         return user;
     }
+
+    public Iterable<User> findAllUsers(){return userRepository.findAll();}
 }

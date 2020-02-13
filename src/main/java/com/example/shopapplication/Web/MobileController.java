@@ -25,7 +25,8 @@ public class MobileController {
     @Autowired
     private MapValidationErrorService mapValidationErrorService;
 
-    @PostMapping("")
+    @PostMapping("/createItem")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addNewMobile(@Valid @RequestBody MobilePhone mobilePhone, BindingResult bindingResult){
 
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
