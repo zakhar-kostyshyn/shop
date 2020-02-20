@@ -1,5 +1,6 @@
 package com.example.shopapplication.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,47 @@ public class MobilePhone {
     @OneToOne(cascade = CascadeType.ALL)
     private Chat chat;
 
-//    public String toString() {
-//        return "\nident : " + mobileIdentifier + " \nbrand : " + brand;
-//    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMobileIdentifier() {
+        return mobileIdentifier;
+    }
+
+    public void setMobileIdentifier(String mobileIdentifier) {
+        this.mobileIdentifier = mobileIdentifier;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getGraduationYear() {
+        return graduationYear;
+    }
+
+    public void setGraduationYear(String graduationYear) {
+        this.graduationYear = graduationYear;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

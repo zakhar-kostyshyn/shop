@@ -1,5 +1,6 @@
 package com.example.shopapplication.Security.Services;
 
+import com.example.shopapplication.Model.ShoppingCart;
 import com.example.shopapplication.Model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,12 +25,15 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
 
     @JsonIgnore
+    private ShoppingCart shoppingCart;
+
+    @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String firstName, String lastName, String username, String email,
-                           String password, Collection<? extends GrantedAuthority> authorities) {
+                           String password,Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -73,6 +77,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
     }
 
     @Override

@@ -2,11 +2,13 @@ package com.example.shopapplication.Services;
 
 import com.example.shopapplication.Model.ERole;
 import com.example.shopapplication.Model.Role;
+import com.example.shopapplication.Model.ShoppingCart;
 import com.example.shopapplication.Model.User;
 import com.example.shopapplication.Payload.Request.LoginRequest;
 import com.example.shopapplication.Payload.Request.SignupRequest;
 import com.example.shopapplication.Payload.Response.JwtResponse;
 import com.example.shopapplication.Repositories.RoleRepository;
+import com.example.shopapplication.Repositories.ShoppingCartRepository;
 import com.example.shopapplication.Repositories.UserRepository;
 import com.example.shopapplication.Security.JwtTokenProvider;
 import com.example.shopapplication.Security.Services.UserDetailsImpl;
@@ -22,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
@@ -52,6 +55,11 @@ public class UserService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+
+
+    @Transactional
     public ResponseEntity<?> createNewUser(SignupRequest signupRequest){
 
         if(userRepository.existsByUsername(signupRequest.getUsername())){
@@ -93,7 +101,16 @@ public class UserService {
             });
         }
 
+        ShoppingCart shoppingCart = new ShoppingCart(signupRequest.getUsername());
+
         newUser.setRoles(roles);
+
+        shoppingCart.setUser(newUser);
+
+        shoppingCartRepository.save(shoppingCart);
+
+        newUser.setShoppingCart(shoppingCart);
+
         userRepository.save(newUser);
 
         return new ResponseEntity<String>("User registered successfully", HttpStatus.OK);
