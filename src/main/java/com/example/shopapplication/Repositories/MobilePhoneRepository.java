@@ -12,4 +12,5 @@ public interface MobilePhoneRepository extends CrudRepository<MobilePhone, Long>
     Optional<MobilePhone> findMobileByMobileIdentifierAndBrand(String mobileIdentifier, String Brand);
 
     MobilePhone findByMobileIdentifier(String mobileIdentifier);
+
 }
