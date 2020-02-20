@@ -57,6 +57,10 @@ public class UserController {
     @GetMapping("/allUsers")
     @PreAuthorize("hasRole('ADMIN')")
     public Iterable<User> getAllUsers(){
+        System.out.println("hello from function ADMIN");
+        for(User user : userService.findAllUsers()){
+            System.out.println(user.toString());
+        }
         return userService.findAllUsers();
     }
 }

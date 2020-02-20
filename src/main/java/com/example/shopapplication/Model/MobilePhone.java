@@ -1,5 +1,6 @@
 package com.example.shopapplication.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -81,4 +82,5 @@ public class MobilePhone {
     public void setPrice(Double price) {
         this.price = price;
     }
+    
 }
