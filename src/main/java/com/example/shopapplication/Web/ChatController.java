@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/mobilePhone/chat")
+@CrossOrigin("*")
 public class ChatController {
 
     @Autowired
@@ -27,8 +28,8 @@ public class ChatController {
     ChatService chatService;
 
     @PostMapping("/post")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> chatPost (@Valid @RequestBody ChatRequest chatRequest, BindingResult bindingResult) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> chatPost (@Valid @RequestBody  ChatRequest chatRequest, BindingResult bindingResult) {
 
         ResponseEntity<?> error = mapValidationErrorService.mapValidationService(bindingResult);
 
@@ -38,10 +39,13 @@ public class ChatController {
         return chatService.postMessage(chatRequest);
     }
 
-    @PostMapping("/get")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<Message> chatGet(@Valid @RequestBody String phoneId) {
-        return chatService.getChatList(phoneId);
+    @GetMapping("/{phoneId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> chatGet(@PathVariable String phoneId) {
+
+        List<Message> list = chatService.getChatList(phoneId);
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
 }

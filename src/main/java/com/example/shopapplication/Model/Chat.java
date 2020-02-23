@@ -1,5 +1,6 @@
 package com.example.shopapplication.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class Chat {
                inverseJoinColumns = @JoinColumn(name = "message_id"))
     private List<Message> data = new LinkedList<>();
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "chat")
     private MobilePhone mobilePhone;
 
