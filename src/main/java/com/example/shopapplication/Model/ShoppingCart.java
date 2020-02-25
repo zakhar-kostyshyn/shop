@@ -60,4 +60,21 @@ public class ShoppingCart {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Override
+    public String toString() {
+        String message = "";
+        double totalPrice = 0;
+
+        message += "==============================" + "\n";
+
+        for (MobilePhone mobilePhone : mobilePhoneList) {
+            totalPrice += mobilePhone.getPrice();
+            message += "Brand: " + mobilePhone.getBrand() + " Model: " + mobilePhone.getModel() + " Price: " +  mobilePhone.getPrice() + "\n";
+        }
+
+        message += "==============================" + "\n";
+
+        return message + "Total Price : " + Double.toString(totalPrice);
+    }
 }

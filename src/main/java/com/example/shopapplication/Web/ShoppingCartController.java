@@ -52,4 +52,12 @@ public class ShoppingCartController {
 
         return new ResponseEntity<String>("Mobile with id: '" + mobileIdentifier + "' was deleted", HttpStatus.OK);
     }
+
+    @PostMapping("/apply")
+    public ResponseEntity<?> applyOrder(Principal principal) throws Exception {
+
+        shoppingCartService.applyOrder(principal.getName());
+
+        return new ResponseEntity<String>("Your message send" , HttpStatus.OK);
+    }
 }

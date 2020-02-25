@@ -8,14 +8,22 @@ import com.example.shopapplication.Model.User;
 import com.example.shopapplication.Repositories.MobilePhoneRepository;
 import com.example.shopapplication.Repositories.ShoppingCartRepository;
 import com.example.shopapplication.Repositories.UserRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+
+import org.springframework.core.io.ByteArrayResource;
+
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
 import org.springframework.stereotype.Service;
 
-import java.nio.MappedByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.util.Optional;
 
 @Service
@@ -32,6 +40,12 @@ public class ShoppingCartService {
 
     @Autowired
     private MobilePhoneService mobilePhoneService;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private EmailService emailService;
 
     public Optional<ShoppingCart> saveProduct(String mobileIdentifier, String username) {
 
@@ -71,5 +85,30 @@ public class ShoppingCartService {
         shoppingCart.get().getMobilePhoneList().remove(mobilePhone);
 
         shoppingCartRepository.save(shoppingCart.get());
+    }
+
+    public void applyOrder(String username) throws Exception{
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message,true);
+
+
+        helper.setFrom("phoneshop.company@gmail.com");
+        helper.setTo(user.get().getEmail());
+        System.out.println(emailService.generateResponseToOrder(user.get()));
+        helper.setText(emailService.generateResponseToOrder(user.get()));
+        helper.setSubject("Order (Phone Shop)");
+
+        final byte[] data = emailService.generatePdfBill();
+
+        helper.addAttachment("bill.pdf", new ByteArrayResource(data));
+
+        //message.setContent(multipart);
+
+        javaMailSender.send(message);
+
     }
 }
