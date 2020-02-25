@@ -1,6 +1,7 @@
 package com.example.shopapplication.Services;
 
 import com.example.shopapplication.Exceptions.MobilePhoneIdException;
+import com.example.shopapplication.Model.Chat;
 import com.example.shopapplication.Model.MobilePhone;
 import com.example.shopapplication.Repositories.MobilePhoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,10 @@ public class MobilePhoneService {
 
     public MobilePhone saveOrUpdateMobile(MobilePhone mobilePhone){
         try {
+
+            // Create Chat when creating Phone
+            mobilePhone.setChat(new Chat());
+
             return mobilePhoneRepository.save(mobilePhone);
         }catch (Exception e){
             throw new MobilePhoneIdException("MobilePhone ID '" + mobilePhone.getMobileIdentifier() + "' already exists");

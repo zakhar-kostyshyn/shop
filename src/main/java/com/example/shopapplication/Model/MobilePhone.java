@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,9 +36,8 @@ public class MobilePhone {
         
     private Double price;
 
-    public Long getId() {
-        return id;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    private Chat chat;
 
     public void setId(Long id) {
         this.id = id;
@@ -82,5 +82,4 @@ public class MobilePhone {
     public void setPrice(Double price) {
         this.price = price;
     }
-    
 }
