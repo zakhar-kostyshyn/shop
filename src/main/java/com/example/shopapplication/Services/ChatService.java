@@ -30,7 +30,7 @@ public class ChatService{
     public ResponseEntity<?> postMessage (ChatRequest chatRequest) {
 
         //  Create new Message
-       Message newMessage = new Message(chatRequest.getUsername(), chatRequest.getMessage());
+       Message newMessage = new Message(chatRequest.getUsername(), chatRequest.getMessage(), chatRequest.getDate());
        messageRepository.save(newMessage);
 
         //   Add new message to List
@@ -46,10 +46,10 @@ public class ChatService{
         existChat.getData().add(newMessage);
         chatRepository.save(existChat);
 
-        return new ResponseEntity<ChatRequest>(chatRequest, HttpStatus.OK);
+        return new ResponseEntity<List<Message>>(existChat.getData(), HttpStatus.OK);
     }
 
-    public List<Message> getChatList (String phoneId) {
+    public ResponseEntity<?> getChatList (String phoneId) {
 
         //  Find and return List of Message
 
@@ -57,7 +57,7 @@ public class ChatService{
         MobilePhone existPhone = mobilePhoneRepository
                 .findByMobileIdentifier(phoneId);
 
-        return existPhone.getChat().getData();
+        return new ResponseEntity<List<Message>>(existPhone.getChat().getData(), HttpStatus.OK);
     }
 
 }

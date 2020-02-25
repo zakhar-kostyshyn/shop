@@ -11,6 +11,8 @@ public class ChatRequest {
 
     private String username;
 
+    private String date;
+
     @NotBlank
     private String phoneId;
 

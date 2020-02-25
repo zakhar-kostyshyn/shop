@@ -42,10 +42,7 @@ public class ChatController {
     @GetMapping("/{phoneId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> chatGet(@PathVariable String phoneId) {
-
-        List<Message> list = chatService.getChatList(phoneId);
-
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return chatService.getChatList(phoneId);
     }
 
 }
