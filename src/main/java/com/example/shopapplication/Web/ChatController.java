@@ -2,6 +2,7 @@ package com.example.shopapplication.Web;
 
 import com.example.shopapplication.Model.Message;
 import com.example.shopapplication.Payload.Request.ChatRequest;
+import com.example.shopapplication.Payload.Request.ChatUpdate;
 import com.example.shopapplication.Services.ChatService;
 import com.example.shopapplication.Services.MapValidationErrorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,19 @@ public class ChatController {
             return error;
 
         return chatService.postMessage(chatRequest);
+    }
+
+    @PostMapping("/update")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> updatePost (@Valid @RequestBody ChatUpdate chatUpdate, BindingResult bindingResult) {
+
+        ResponseEntity<?> error = mapValidationErrorService.mapValidationService(bindingResult);
+
+        if (error != null)
+            return error;
+
+
+        return chatService.updateMessage(chatUpdate);
     }
 
     @GetMapping("/{phoneId}")

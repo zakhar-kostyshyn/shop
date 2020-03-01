@@ -4,6 +4,7 @@ import com.example.shopapplication.Model.Chat;
 import com.example.shopapplication.Model.Message;
 import com.example.shopapplication.Model.MobilePhone;
 import com.example.shopapplication.Payload.Request.ChatRequest;
+import com.example.shopapplication.Payload.Request.ChatUpdate;
 import com.example.shopapplication.Repositories.ChatRepository;
 import com.example.shopapplication.Repositories.MessageRepository;
 import com.example.shopapplication.Repositories.MobilePhoneRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 public class ChatService{
@@ -26,34 +28,36 @@ public class ChatService{
     @Autowired
     MessageRepository messageRepository;
 
-    //  write data into bd
     public ResponseEntity<?> postMessage (ChatRequest chatRequest) {
 
-        //  Create new Message
        Message newMessage = new Message(chatRequest.getUsername(), chatRequest.getMessage(), chatRequest.getDate());
        messageRepository.save(newMessage);
 
-        //   Add new message to List
-
-        //  first find Mobile  id
         MobilePhone existPhone = mobilePhoneRepository
                 .findByMobileIdentifier(chatRequest.getPhoneId());
 
-        //  take chat from Mobile
         Chat existChat = existPhone.getChat();
 
-        //  Add message to list in chat that was founded
         existChat.getData().add(newMessage);
         chatRepository.save(existChat);
 
         return new ResponseEntity<List<Message>>(existChat.getData(), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> updateMessage (ChatUpdate chatUpdate) {
+
+        Message updateMessage = new Message(chatUpdate.getUsername(), chatUpdate.getMessage(), chatUpdate.getDate());
+        updateMessage.setId(Integer.parseInt(chatUpdate.getMessageId()));
+
+        System.out.println(updateMessage);
+
+        messageRepository.save(updateMessage);
+
+        return new ResponseEntity<Message>(updateMessage, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> getChatList (String phoneId) {
 
-        //  Find and return List of Message
-
-        // find Mobile using phoneId
         MobilePhone existPhone = mobilePhoneRepository
                 .findByMobileIdentifier(phoneId);
 
