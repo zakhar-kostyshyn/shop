@@ -1,15 +1,17 @@
 package com.example.shopapplication.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
-@Data
 @NoArgsConstructor
 @Entity
+@Setter
+@Getter
 public class Message {
 
     @Id
@@ -22,7 +24,13 @@ public class Message {
 
     private String date;
 
-    
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "message_reply_id")
+    private Message parent;
+
+    @OneToMany(mappedBy = "parent")
+    private Set<Message> replies = new HashSet<>();
 
     public Message(String username, String message, String date) {
         this.username = username;
@@ -30,7 +38,17 @@ public class Message {
         this.date = date;
     }
 
-    public String toString () {
-        return "\nid : " + id + "\n username : " + username + "\n message : " + message + "\n date : " + date;
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", message='" + message + '\'' +
+                ", date='" + date + '\'' +
+                ", replies=" + replies +
+                '}';
     }
+
+
 }
