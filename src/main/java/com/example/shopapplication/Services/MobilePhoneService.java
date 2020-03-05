@@ -16,8 +16,10 @@ public class MobilePhoneService {
     public MobilePhone saveOrUpdateMobile(MobilePhone mobilePhone){
         try {
 
-            // Create Chat when creating Phone
-            mobilePhone.setChat(new Chat());
+            // Create Chat when creating Phone if it is't
+            if (mobilePhone.getChat() == null)
+                mobilePhone.setChat(new Chat());
+
 
             return mobilePhoneRepository.save(mobilePhone);
         }catch (Exception e){

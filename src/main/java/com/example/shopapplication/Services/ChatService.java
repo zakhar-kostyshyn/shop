@@ -64,7 +64,12 @@ public class ChatService{
         MobilePhone existPhone = mobilePhoneRepository
                 .findByMobileIdentifier(phoneId);
 
-        return new ResponseEntity<List<Message>>(existPhone.getChat().getData(), HttpStatus.OK);
+        List<Message> getList = existPhone.getChat().getData();
+
+        if (getList != null)
+            return new ResponseEntity<List<Message>>(existPhone.getChat().getData(), HttpStatus.OK);
+        else
+            return new ResponseEntity<String>("list of messages is null", HttpStatus.BAD_REQUEST);
     }
 
 
