@@ -3,9 +3,19 @@ package com.example.shopapplication.Services;
 import com.example.shopapplication.Exceptions.MobilePhoneIdException;
 import com.example.shopapplication.Model.Chat;
 import com.example.shopapplication.Model.MobilePhone;
+import com.example.shopapplication.Payload.Request.FilterRequest;
+import com.example.shopapplication.Payload.Request.MobileRequest;
 import com.example.shopapplication.Repositories.MobilePhoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 @Service
 public class MobilePhoneService {
@@ -15,6 +25,8 @@ public class MobilePhoneService {
 
     public MobilePhone saveOrUpdateMobile(MobilePhone mobilePhone){
         try {
+
+            //mobilePhone.setImage(byteObject.get());
 
             // Create Chat when creating Phone
             mobilePhone.setChat(new Chat());
@@ -36,7 +48,27 @@ public class MobilePhoneService {
         return mobilePhone;
     }
 
-    public Iterable<MobilePhone> findAllMobilePhone(){
+    public Page<MobilePhone> findAllMobilePhonesPaging(Pageable pageable)
+    {
+        /*
+        List<String> filters = new ArrayList<>();
+        filters.add("s10+");
+        filters.add("S20");
+
+        Page<MobilePhone> list = mobilePhoneRepository.findByModelIn(filters, pageable);
+
+        for(MobilePhone phone : list){
+            System.out.println("1" + phone.toString());
+        }
+
+
+        return null;
+
+        */
+        return mobilePhoneRepository.findAll(pageable);
+    }
+
+    public Iterable<MobilePhone> findAllMobilePhones(){
         return mobilePhoneRepository.findAll();
     }
 
@@ -47,5 +79,45 @@ public class MobilePhoneService {
         if(mobilePhone == null) throw new MobilePhoneIdException("Cannot Mobile with Id '" + identifier + "' .This mobile doesn't exist");
 
         mobilePhoneRepository.delete(mobilePhone);
+    }
+
+    public Map<String, Set<String>> getFilters(){
+        Map<String, Set<String>> filters = new HashMap<>();
+        filters.put("brands", mobilePhoneRepository.findBrands().stream().collect(Collectors.toSet()));
+        return filters;
+    }
+
+    public Page<MobilePhone> filterByBrand(FilterRequest filterRequest, Pageable pageable){
+
+        List<MobilePhone> filteredByBrand = mobilePhoneRepository.findByBrandIn(filterRequest.getBrands());
+        List<MobilePhone> filteredByPrice = mobilePhoneRepository.findByPriceRange(Double.parseDouble(filterRequest.getPriceRange()));
+
+        List<MobilePhone> listIntersection = intersection(filteredByBrand,filteredByPrice);
+
+        for(MobilePhone m : filteredByPrice){
+            System.out.println(m.toString());
+        }
+
+        long start = pageable.getOffset();
+        long end = (start + pageable.getPageSize() > listIntersection.size() ? listIntersection.size() : (start + pageable.getPageSize()));
+
+        Page<MobilePhone> pages = new PageImpl<MobilePhone>(listIntersection.subList((int)start,(int)end), pageable, listIntersection.size());
+
+        return pages;
+    }
+
+    public List<MobilePhone> intersection(List<MobilePhone> list1, List<MobilePhone> list2){
+
+        if(list1.isEmpty()) return list2;
+
+        List<MobilePhone> list = new ArrayList<>();
+
+        for(MobilePhone m : list1){
+            if(list2.contains(m)){
+                list.add(m);
+            }
+        }
+
+        return list;
     }
 }

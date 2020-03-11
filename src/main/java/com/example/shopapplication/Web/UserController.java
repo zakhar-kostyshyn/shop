@@ -14,8 +14,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -60,5 +64,19 @@ public class UserController {
             System.out.println(user.toString());
         }
         return userService.findAllUsers();
+    }
+
+    @PostMapping("/savePhoto")
+    public ResponseEntity<String> savePhoto(@RequestParam("imageFile") MultipartFile multipartFile, Principal principal) throws IOException {
+
+        userService.savePhoto(multipartFile, principal.getName());
+
+        return new ResponseEntity<String>("Photo saved", HttpStatus.OK);
+    }
+
+    @PostMapping("/changeAccount")
+    public ResponseEntity<?> changeAccount(@RequestBody Map<String, String> mapAccount, Principal principal) {
+
+        return userService.changeAccount(mapAccount, principal.getName());
     }
 }

@@ -49,7 +49,7 @@ public class ShoppingCartService {
 
     public Optional<ShoppingCart> saveProduct(String mobileIdentifier, String username) {
 
-        Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByShoppingCartIdentifier(username); // exception not fount maybe unreal
+        Optional<ShoppingCart> shoppingCart = Optional.ofNullable(userRepository.findByUsername(username).get().getShoppingCart()); // exception not fount maybe unreal
 
         MobilePhone mobilePhone = mobilePhoneService.findMobileByIdentifier(mobileIdentifier);
 
@@ -57,9 +57,10 @@ public class ShoppingCartService {
             throw new MobilePhoneIdException("MobilePhone ID '" + mobileIdentifier + "' doesn't exist");
         }
 
+        /*
         if(shoppingCart.get().getMobilePhoneList().contains(mobilePhone))
             throw new MobilePhoneIdException("MobilePhone ID '" + mobileIdentifier + "' already exist in shopping cart!");
-
+        */
         //shoppingCart.get().getMobilePhoneList().add(mobilePhone);
 
         shoppingCart.get().getMobilePhoneList().add(mobilePhone);
@@ -71,14 +72,16 @@ public class ShoppingCartService {
 
     public Optional<ShoppingCart> getShoppingCart(String username){
 
-        Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByShoppingCartIdentifier(username);
+        //Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByShoppingCartIdentifier(username);
 
-        return shoppingCart;
+        Optional<User> user = userRepository.findByUsername(username);
+
+        return Optional.ofNullable(user.get().getShoppingCart());
     }
 
     public void deleteMobileFromCart(String mobileIdentifier, String username){
 
-        Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByShoppingCartIdentifier(username);
+        Optional<ShoppingCart> shoppingCart = Optional.ofNullable(userRepository.findByUsername(username).get().getShoppingCart());
 
         MobilePhone mobilePhone = mobilePhoneService.findMobileByIdentifier(mobileIdentifier);
 
@@ -111,4 +114,14 @@ public class ShoppingCartService {
         javaMailSender.send(message);
 
     }
+    /*
+    public void updateShoppingCartIdentifier(String oldIdentifier, String newIdentifier){
+
+        Optional<ShoppingCart> cart = shoppingCartRepository.findByShoppingCartIdentifier(oldIdentifier);
+
+        cart.get().setShoppingCartIdentifier(newIdentifier);
+
+        shoppingCartRepository.save(cart.get());
+    }
+    */
 }

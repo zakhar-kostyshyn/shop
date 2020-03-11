@@ -26,10 +26,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.shopapplication.Security.SecurityConstants.TOKEN_PREFIX;
@@ -57,6 +57,9 @@ public class UserService {
 
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
+
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 
 
     @Transactional
@@ -117,7 +120,10 @@ public class UserService {
     }
 
     public JwtResponse authenticateUser(LoginRequest loginRequest){
+
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        System.out.println(authentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenProvider.generateToken(authentication);
@@ -152,4 +158,68 @@ public class UserService {
     }
 
     public Iterable<User> findAllUsers(){return userRepository.findAll();}
+
+    public void savePhoto(MultipartFile file, String username) throws IOException {
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        Optional<Byte[]> byteObjects = Optional.of(Optional.of(new Byte[file.getBytes().length])
+                .orElseThrow(() -> new RuntimeException("file don't push")));
+
+        int count = 0;
+
+        for(byte b : file.getBytes()) byteObjects.get()[count++] = b;
+
+        user.get().setImage(byteObjects.get());
+
+        userRepository.save(user.get());
+    }
+
+    public ResponseEntity<?> changeAccount(Map<String,String> mapOfChanges, String username){
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        Map<String, String> errorMap = new HashMap<>();
+
+        for(Map.Entry<String,String> entry : mapOfChanges.entrySet()){
+            switch (entry.getKey()){
+                case "password" :
+                    if(entry.getValue().length() > 1) {
+                        if (bCryptPasswordEncoder.matches(entry.getValue().split("-")[0], user.get().getPassword())) {
+                            user.get().setPassword(bCryptPasswordEncoder.encode(entry.getValue().split("-")[1]));
+                        } else {
+                            errorMap.put("password", "passwords don't constraint");
+                        }
+                    }
+                    break;
+                case "username" :
+                    if(!entry.getValue().equals("")) {
+                        if (userRepository.existsByUsername(entry.getValue())) {
+                            errorMap.put("username", "username already exists");
+                        } else {
+                            //shoppingCartService.updateShoppingCartIdentifier(username, entry.getValue());
+                            user.get().setUsername(entry.getValue());
+
+                        }
+                    }
+                    break;
+                case "email" :
+                    if(!entry.getValue().equals("")) {
+                        if (userRepository.existsByEmail(entry.getValue())) {
+                            errorMap.put("email", "email already exists");
+                        } else {
+                            user.get().setEmail(entry.getValue());
+                        }
+                    }
+            }
+        }
+
+        if(!errorMap.isEmpty()){
+            return new ResponseEntity<Map<String,String>>(errorMap,HttpStatus.BAD_REQUEST);
+        }
+
+        userRepository.save(user.get());
+
+        return new ResponseEntity<String>("Changes saved successfully", HttpStatus.OK);
+    }
 }

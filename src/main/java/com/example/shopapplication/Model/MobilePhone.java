@@ -2,16 +2,20 @@ package com.example.shopapplication.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.sql.Blob;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class MobilePhone {
 
     @Id
@@ -36,8 +40,20 @@ public class MobilePhone {
         
     private Double price;
 
+    @Lob
+    private String image;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Chat chat;
+
+    public MobilePhone(String mobileIdentifier, String brand, String model, String graduationYear, Double price, String image) {
+        this.mobileIdentifier = mobileIdentifier;
+        this.brand = brand;
+        this.model = model;
+        this.graduationYear = graduationYear;
+        this.price = price;
+        this.image = image;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -81,5 +97,25 @@ public class MobilePhone {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Chat getChat() {
+        return chat;
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
     }
 }

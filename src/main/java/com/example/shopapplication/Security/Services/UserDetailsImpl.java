@@ -7,6 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.*;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,8 @@ public class UserDetailsImpl implements UserDetails {
 
     private String email;
 
+    private String image;
+
     @JsonIgnore
     private ShoppingCart shoppingCart;
 
@@ -32,8 +36,8 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String firstName, String lastName, String username, String email,
-                           String password,Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String firstName, String lastName, String username, String email, String image,
+                           String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,6 +45,7 @@ public class UserDetailsImpl implements UserDetails {
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.image = image;
     }
 
     public static UserDetailsImpl build(User user){
@@ -48,14 +53,45 @@ public class UserDetailsImpl implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 
+        byte[] encoded = null;
+
+        String image = "";
+
+        if(user.getImage() != null) {
+            byte[] bytes = new byte[user.getImage().length];
+
+            int count = 0;
+
+            for (byte b : user.getImage()) bytes[count++] = b;
+
+            encoded = Base64.getEncoder().encode(bytes);
+
+            image = new String(encoded);
+        }
+
         return new UserDetailsImpl(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getUsername(),
                 user.getEmail(),
+                image,
                 user.getPassword(),
                 authorities);
+    }
+
+    public static File convertToFile(Byte[] bytes){
+        File file = new File("");
+        try{
+            OutputStream os = new FileOutputStream(file);
+            os.write(bytes.length);
+            os.close();
+            return file;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -82,6 +118,8 @@ public class UserDetailsImpl implements UserDetails {
     public ShoppingCart getShoppingCart() {
         return shoppingCart;
     }
+
+    public String getImage(){return image;}
 
     @Override
     public String getPassword() {

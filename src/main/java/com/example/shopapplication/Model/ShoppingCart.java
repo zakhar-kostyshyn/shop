@@ -61,6 +61,14 @@ public class ShoppingCart {
         this.user = user;
     }
 
+    public void setShoppingCartIdentifier(String shoppingCartIdentifier) {
+        this.shoppingCartIdentifier = shoppingCartIdentifier;
+    }
+
+    public String getShoppingCartIdentifier() {
+        return shoppingCartIdentifier;
+    }
+
     @Override
     public String toString() {
         String message = "";
@@ -77,4 +85,6 @@ public class ShoppingCart {
 
         return message + "Total Price : " + Double.toString(totalPrice);
     }
+
+
 }
