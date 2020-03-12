@@ -105,7 +105,7 @@ public class ShoppingCartService {
         helper.setText(emailService.generateResponseToOrder(user.get()));
         helper.setSubject("Order (Phone Shop)");
 
-        final byte[] data = emailService.generatePdfBill();
+        final byte[] data = emailService.generatePdfBill(username);
 
         helper.addAttachment("bill.pdf", new ByteArrayResource(data));
 
